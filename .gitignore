@@ -1,0 +1,7 @@
+node_modules/
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+mochawesome-report/
+*.log
+.DS_Store

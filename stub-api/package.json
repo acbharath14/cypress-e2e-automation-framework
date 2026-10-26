@@ -1,0 +1,1 @@
+{"dependencies":{"express":"5.3.0"},"engines":{"node":">=22"},"main":"server.js","name":"stub-api","private":true,"scripts":{"start":"node server.js"},"version":"0.1.0"}
