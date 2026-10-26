@@ -1,6 +1,9 @@
 // Preflight: checks required setup and installs what is missing before
 // tests run. Node dependencies are installed with `npm ci` (fatal on
 // failure — a run with known-missing deps would only produce noise).
+// Missing is judged per direct dependency in package.json, so a stale
+// node_modules (e.g. after pulling new dependencies) triggers a reinstall
+// instead of a confusing failure later in the run.
 // Browsers and drivers are CHECKED, never installed: when one is missing
 // this prints the exact fix command and continues with a warning.
 //
@@ -10,6 +13,7 @@
 
 const { execSync, spawnSync } = require('node:child_process');
 const path = require('node:path');
+const fs = require('node:fs');
 
 const ROOT = path.join(__dirname, '..');
 const STUB_DIR = path.join(ROOT, 'stub-api');
@@ -23,13 +27,14 @@ function warn(message) {
   console.log(`PREFLIGHT WARNING: ${message}`);
 }
 
-function packagePresent(dir, name) {
-  try {
-    require.resolve(name, { paths: [dir] });
-    return true;
-  } catch {
-    return false;
-  }
+// A dependency counts as present when its directory exists under
+// node_modules. Directory existence (not require.resolve) is deliberate:
+// it also covers bin-only packages such as allure-commandline, which has
+// no requireable entry point.
+function missingDeps(dir) {
+  const pkg = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8'));
+  const names = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.devDependencies || {})];
+  return names.filter((name) => !fs.existsSync(path.join(dir, 'node_modules', ...name.split('/'))));
 }
 
 function installDeps(dir, label) {
@@ -49,13 +54,15 @@ function main() {
   }
   console.log(`PREFLIGHT: Node ${process.versions.node} OK`);
 
-  if (!packagePresent(ROOT, 'cypress')) {
+  const rootMissing = missingDeps(ROOT);
+  if (rootMissing.length > 0) {
     installDeps(ROOT, 'root');
   } else {
     console.log('PREFLIGHT: root dependencies OK');
   }
 
-  if (!packagePresent(STUB_DIR, 'express')) {
+  const stubMissing = missingDeps(STUB_DIR);
+  if (stubMissing.length > 0) {
     installDeps(STUB_DIR, 'stub-api');
   } else {
     console.log('PREFLIGHT: stub-api dependencies OK');
