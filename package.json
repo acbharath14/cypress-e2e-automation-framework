@@ -1,1 +1,24 @@
-{"description":"Cypress end-to-end automation framework: Page Objects, fixtures, custom commands, UI tests on Swag Labs and API tests on an in-repo stub, with CI.","devDependencies":{"cypress":"16.2.0","mochawesome":"8.1.1"},"engines":{"node":">=22"},"name":"cypress-e2e-automation-framework","scripts":{"cy:open":"cypress open","cy:run":"cypress run","preflight":"node scripts/preflight.cjs","setup":"node scripts/preflight.cjs","stub":"node stub-api/server.js","test":"node scripts/run-tests.cjs"},"version":"0.1.0"}
+{
+  "description": "Cypress end-to-end automation framework: Page Objects, fixtures, custom commands, UI tests on Swag Labs and API tests on an in-repo stub, with CI.",
+  "devDependencies": {
+    "cypress": "16.2.0",
+    "mochawesome": "8.1.1",
+    "allure-cypress": "3.14.0",
+    "allure-commandline": "2.46.1"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "name": "cypress-e2e-automation-framework",
+  "scripts": {
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "preflight": "node scripts/preflight.cjs",
+    "setup": "node scripts/preflight.cjs",
+    "stub": "node stub-api/server.js",
+    "test": "node scripts/run-tests.cjs",
+    "allure:generate": "allure generate allure-results --clean -o allure-report",
+    "allure:serve": "allure serve allure-results"
+  },
+  "version": "0.1.0"
+}

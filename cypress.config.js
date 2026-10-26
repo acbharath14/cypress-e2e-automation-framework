@@ -1,7 +1,18 @@
 const { defineConfig } = require('cypress');
+const { allureCypress } = require('allure-cypress/reporter');
 
 module.exports = defineConfig({
   e2e: {
+    // Allure results are written on every run by the official Allure
+    // adapter (allure-cypress 3.12.2+ is required for Cypress 16).
+    // Mochawesome stays as the reporter — the adapter works through
+    // setupNodeEvents, not the reporter field, so both reports coexist.
+    setupNodeEvents(on, config) {
+      allureCypress(on, config, {
+        resultsDir: 'allure-results',
+      });
+      return config;
+    },
     baseUrl: 'https://www.saucedemo.com',
     specPattern: 'cypress/e2e/**/*.cy.js',
     supportFile: 'cypress/support/e2e.js',

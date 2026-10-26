@@ -98,15 +98,28 @@ postalCode)`, and `cy.apiRequest(method, path, options)` for the stub API
 
 ## Reports
 
-After a run, you get three things:
+Every run produces:
 
 - **Mochawesome HTML report** in `mochawesome-report/` — the readable
   pass/fail summary.
+- **Allure results** in `allure-results/` — machine-readable test results
+  (suites, tests, steps, timing, attachments) written by the official
+  Allure adapter (`allure-cypress`). Mochawesome stays as the reporter;
+  the adapter works through `setupNodeEvents`, so both reports come out
+  of the same run.
 - **Screenshots** in `cypress/screenshots/` — captured automatically when
   a test fails.
 - **Videos** in `cypress/videos/` — a recording of each spec run.
 
-CI uploads all three as artifacts on every run, pass or fail.
+To view the Allure report, generate the static HTML version or serve the
+results live (both need Java 17+ for the Allure commandline tool):
+
+- `npm run allure:generate` — writes the static report to `allure-report/`
+  (open `allure-report/index.html`).
+- `npm run allure:serve` — serves the report from `allure-results/`
+  directly, no generate step.
+
+CI uploads all of these as artifacts on every run, pass or fail.
 
 ## CI
 
@@ -116,12 +129,12 @@ workflow: the GitHub App used for pushes cannot write
 `.github/workflows/cypress.yml` via the GitHub web UI (keep the `"on":`
 key quoted — a bare `on:` parses as boolean `true` in some YAML
 validators and GitHub then registers zero triggers). CI installs both
-`package.json` trees, runs `npm test`, and uploads the reports.
+`package.json` trees, runs `npm test`, generates the static Allure report (Java 17 is set up for that step), and uploads the reports. Report generation never fails the build (that step has `continue-on-error`).
 
 ## Preflight
 
 `npm run setup` runs `scripts/preflight.cjs` before anything else. It
-checks Node 20+, installs any missing `node_modules` (root and stub) with
+checks Node 22+, installs any missing `node_modules` (root and stub) with
 `npm ci`, and checks the Cypress binary — installing a browser or driver
 is never done for you; if the binary is missing it prints the exact fix
 command (`npx cypress install`) and continues with a warning. To skip
