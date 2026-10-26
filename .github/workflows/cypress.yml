@@ -1,0 +1,36 @@
+name: Cypress
+
+# TEMPLATE ONLY — paste this file's contents into
+# .github/workflows/cypress.yml via the GitHub web UI.
+# Keep "on" quoted: a bare on: parses as boolean true in some YAML
+# validators and GitHub then registers zero triggers.
+"on":
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm ci --prefix stub-api
+      # npm test starts the stub and passes its URL to Cypress itself
+      # via --expose, so no extra environment is needed here.
+      - run: npm test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-artifacts
+          path: |
+            cypress/videos
+            cypress/screenshots
+            mochawesome-report

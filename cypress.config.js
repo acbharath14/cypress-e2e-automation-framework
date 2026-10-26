@@ -2,6 +2,7 @@ const { defineConfig } = require('cypress');
 const { allureCypress } = require('allure-cypress/reporter');
 
 module.exports = defineConfig({
+  projectId: '5887if',
   e2e: {
     // Allure results are written on every run by the official Allure
     // adapter (allure-cypress 3.12.2+ is required for Cypress 16).
