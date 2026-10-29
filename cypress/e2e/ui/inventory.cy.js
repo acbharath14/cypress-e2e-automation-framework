@@ -7,7 +7,7 @@ describe('inventory', () => {
     cy.login(users.standard.username, users.standard.password);
   });
 
-  it('shows every product from the fixture', () => {
+  it('shows every product from the fixture', { tags: '@smoke' }, () => {
     InventoryPage.itemCount().should('have.length', products.length);
     products.forEach((product) => {
       InventoryPage.itemNames().should('contain', product.name);

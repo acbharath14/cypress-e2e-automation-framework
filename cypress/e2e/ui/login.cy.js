@@ -7,7 +7,7 @@ describe('login', () => {
     LoginPage.visit();
   });
 
-  it('logs in with valid credentials and lands on the inventory page', () => {
+  it('logs in with valid credentials and lands on the inventory page', { tags: '@smoke' }, () => {
     LoginPage.login(users.standard.username, users.standard.password);
     InventoryPage.title().should('have.text', 'Products');
   });

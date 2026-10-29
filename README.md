@@ -55,6 +55,7 @@ lifecycle (create, read, update, patch, delete) and the negative paths:
 
 ```
 cypress.config.js        Cypress configuration (base URL, retries, reports)
+eslint.config.mjs        ESLint flat config for the test code (see below)
 cypress/
   e2e/
     ui/                  UI specs: login, inventory, cart, checkout
@@ -120,6 +121,23 @@ results live (both need Java 17+ for the Allure commandline tool):
   directly, no generate step.
 
 CI uploads all of these as artifacts on every run, pass or fail.
+
+## Lint, environments, and tags
+
+- **Lint:** `npm run lint` runs ESLint over `cypress/`
+  (eslint-plugin-cypress recommended rules). Run it before pushing.
+- **Environments:** `CYPRESS_BASE_URL` overrides the UI target (default
+  Swag Labs) and `CYPRESS_API_URL` overrides the stub URL (default
+  `http://localhost:3000`). Example:
+  `CYPRESS_BASE_URL=https://staging.example.com npm test`. Note:
+  `npm test` always passes `--expose apiUrl=...` for the stub it
+  starts, which wins over `CYPRESS_API_URL` for that run; the variable
+  applies to runs that do not go through `run-tests.cjs`.
+- **Tags:** the happy-path tests carry `{ tags: '@smoke' }` (valid
+  login, inventory list, add to cart, complete checkout). Run just
+  those with `npm test -- --expose grepTags=@smoke` — Cypress 16 uses
+  `--expose`, not `--env`. Add `{ tags: '@name' }` to any test or
+  describe block to grow the tagged sets.
 
 ## CI
 

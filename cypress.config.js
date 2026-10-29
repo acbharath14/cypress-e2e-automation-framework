@@ -12,9 +12,15 @@ module.exports = defineConfig({
       allureCypress(on, config, {
         resultsDir: 'allure-results',
       });
+      // Test tagging (@cypress/grep): enables --env grepTags=... runs.
+      const { plugin: cypressGrepPlugin } = require('@cypress/grep/plugin');
+      cypressGrepPlugin(config);
       return config;
     },
-    baseUrl: 'https://www.saucedemo.com',
+    // Environment-based config: CYPRESS_BASE_URL overrides the UI target
+    // (default: Swag Labs). Useful for pointing the suite at a staging
+    // deployment without editing this file.
+    baseUrl: process.env.CYPRESS_BASE_URL || 'https://www.saucedemo.com',
     specPattern: 'cypress/e2e/**/*.cy.js',
     supportFile: 'cypress/support/e2e.js',
     video: true,
@@ -36,8 +42,9 @@ module.exports = defineConfig({
   },
   // Public configuration, read in tests with Cypress.expose(). Cypress 16
   // removed Cypress.env(); the apiUrl default here is overridden per run by
-  // scripts/run-tests.cjs with --expose.
+  // scripts/run-tests.cjs with --expose, and can also be overridden with
+  // CYPRESS_API_URL (for runs that do not go through run-tests.cjs).
   expose: {
-    apiUrl: 'http://localhost:3000',
+    apiUrl: process.env.CYPRESS_API_URL || 'http://localhost:3000',
   },
 });

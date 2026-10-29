@@ -7,7 +7,7 @@ describe('checkout', () => {
     cy.login(users.standard.username, users.standard.password);
   });
 
-  it('completes checkout end to end', () => {
+  it('completes checkout end to end', { tags: '@smoke' }, () => {
     cy.addToCart('Sauce Labs Backpack');
     cy.addToCart('Sauce Labs Bike Light');
     InventoryPage.goToCart();

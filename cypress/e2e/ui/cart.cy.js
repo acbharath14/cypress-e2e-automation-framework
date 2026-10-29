@@ -7,7 +7,7 @@ describe('cart', () => {
     cy.login(users.standard.username, users.standard.password);
   });
 
-  it('adds items and shows them in the cart', () => {
+  it('adds items and shows them in the cart', { tags: '@smoke' }, () => {
     cy.addToCart('Sauce Labs Backpack');
     cy.addToCart('Sauce Labs Bike Light');
     InventoryPage.cartBadge().should('have.text', '2');
