@@ -7,9 +7,24 @@ describe('login', () => {
     LoginPage.visit();
   });
 
-  it('logs in with valid credentials and lands on the inventory page', { tags: '@smoke' }, () => {
-    LoginPage.login(users.standard.username, users.standard.password);
-    InventoryPage.title().should('have.text', 'Products');
+  // One behavior (a successful login lands on the inventory page), one row
+  // per user. The glitch user loads slowly, so its row carries a per-row
+  // timeout for the inventory title.
+  const validUsers = [
+    { label: 'standard', user: users.standard, tags: '@smoke' },
+    { label: 'problem', user: users.problem },
+    { label: 'glitch', user: users.glitch, options: { timeout: 15000 } },
+  ];
+
+  validUsers.forEach(({ label, user, tags, options }) => {
+    it(
+      `logs in the ${label} user and lands on the inventory page`,
+      tags ? { tags } : {},
+      () => {
+        LoginPage.login(user.username, user.password);
+        InventoryPage.title(options).should('have.text', 'Products');
+      },
+    );
   });
 
   it('shows an error for a locked-out user', () => {
@@ -23,15 +38,5 @@ describe('login', () => {
       'contain',
       'Username and password do not match',
     );
-  });
-
-  it('logs in the problem user', () => {
-    LoginPage.login(users.problem.username, users.problem.password);
-    InventoryPage.title().should('have.text', 'Products');
-  });
-
-  it('logs in the slow performance-glitch user', () => {
-    LoginPage.login(users.glitch.username, users.glitch.password);
-    InventoryPage.title({ timeout: 15000 }).should('have.text', 'Products');
   });
 });
