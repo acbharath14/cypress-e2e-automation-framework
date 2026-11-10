@@ -25,29 +25,27 @@ describe('inventory', () => {
     });
   });
 
-  it('sorts products A to Z', () => {
-    InventoryPage.sortBy('az');
-    InventoryPage.itemNames()
-      .first()
-      .should('have.text', 'Sauce Labs Backpack');
-  });
+  // One behavior (the sort control orders the list), one row per sort
+  // option with the expected first item.
+  const sortCases = [
+    { label: 'A to Z', option: 'az', first: 'Sauce Labs Backpack' },
+    {
+      label: 'Z to A',
+      option: 'za',
+      first: 'Test.allTheThings() T-Shirt (Red)',
+    },
+    { label: 'price low to high', option: 'lohi', first: 'Sauce Labs Onesie' },
+    {
+      label: 'price high to low',
+      option: 'hilo',
+      first: 'Sauce Labs Fleece Jacket',
+    },
+  ];
 
-  it('sorts products Z to A', () => {
-    InventoryPage.sortBy('za');
-    InventoryPage.itemNames()
-      .first()
-      .should('have.text', 'Test.allTheThings() T-Shirt (Red)');
-  });
-
-  it('sorts products by price low to high', () => {
-    InventoryPage.sortBy('lohi');
-    InventoryPage.itemNames().first().should('have.text', 'Sauce Labs Onesie');
-  });
-
-  it('sorts products by price high to low', () => {
-    InventoryPage.sortBy('hilo');
-    InventoryPage.itemNames()
-      .first()
-      .should('have.text', 'Sauce Labs Fleece Jacket');
+  sortCases.forEach(({ label, option, first }) => {
+    it(`sorts products ${label}`, () => {
+      InventoryPage.sortBy(option);
+      InventoryPage.itemNames().first().should('have.text', first);
+    });
   });
 });
